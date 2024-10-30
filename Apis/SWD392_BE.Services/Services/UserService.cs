@@ -87,7 +87,6 @@ namespace SWD392_BE.Services.Services
                     var userViewModels = users.Select(u => new ListUserViewModel
                     {
                         UserId = u.UserId,
-                        CampusId = u.Campus.CampusId,
                         Name = u.Name,
                         UserName = u.UserName,
                         Password = u.Password,
@@ -207,10 +206,15 @@ namespace SWD392_BE.Services.Services
                 // Update the additional fields
                 existingUser.Name = model.Name;
                 existingUser.Email = model.Email;
-                existingUser.CampusId = model.CampusId;
+                if (!string.IsNullOrWhiteSpace(model.CampusId))
+                {
+                    existingUser.CampusId = model.CampusId;
+                }
+
                 existingUser.Phone = model.Phone;
                 existingUser.Role = model.Role;
                 existingUser.Balance = model.Balance;
+
                 existingUser.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
                 existingUser.ModifiedDate = DateTime.Now;
                 _userRepository.Update(existingUser);
@@ -289,7 +293,6 @@ namespace SWD392_BE.Services.Services
                 existingUser.Name = model.Name;
                 existingUser.Password = PasswordHasher.HashPassword(model.NewPassword); // Update the password
                 existingUser.Email = model.Email;
-                existingUser.CampusId = model.CampusId;
                 existingUser.Phone = model.Phone;
                 existingUser.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
                 existingUser.ModifiedDate = DateTime.Now;
