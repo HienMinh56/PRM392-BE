@@ -207,7 +207,10 @@ namespace SWD392_BE.Services.Services
                 // Update the additional fields
                 existingUser.Name = model.Name;
                 existingUser.Email = model.Email;
-                existingUser.CampusId = model.CampusId;
+                if (!string.IsNullOrEmpty(model.CampusId))
+                {
+                    existingUser.CampusId = model.CampusId;
+                }
                 existingUser.Phone = model.Phone;
                 existingUser.Role = model.Role;
                 existingUser.Balance = model.Balance;
