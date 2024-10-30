@@ -1,4 +1,4 @@
-﻿ using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -71,10 +71,48 @@ namespace SWD392_BE.API.Controllers
         [HttpPut("{userId}")]
         public async Task<ActionResult<ResultModel>> UpdateUser(string userId, UpdateUserViewModel model)
         {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return BadRequest(new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 400,
+                    Message = "UserId is required."
+                });
+            }
+
+            if (model == null)
+            {
+                return BadRequest(new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 400,
+                    Message = "User data is required."
+                });
+            }
+
             try
             {
                 var currentUser = HttpContext.User;
+
+                var existingUser =  _userService.GetUserById(userId);
+                if (existingUser == null)
+                {
+                    return NotFound(new ResultModel
+                    {
+                        IsSuccess = false,
+                        Code = 404,
+                        Message = "User not found."
+                    });
+                }
+
+                if (string.IsNullOrEmpty(model.CampusId))
+                {
+                    model.CampusId = existingUser.CampusId;
+                }
+
                 var updateResult = await _userService.UpdateUser(userId, model, currentUser);
+
                 var result = new ResultModel
                 {
                     IsSuccess = true,
@@ -146,4 +184,3 @@ namespace SWD392_BE.API.Controllers
        
     }
 }
-
